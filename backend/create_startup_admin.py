@@ -6,10 +6,11 @@ This ensures there's always an admin account available.
 
 import os
 import sys
-import hashlib
+import uuid
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from models import User, UserRole
+from auth import get_password_hash
 
 # Database connection
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@db:5432/clay_cutter_orders")
@@ -28,10 +29,11 @@ def create_admin_user():
             print("Admin user already exists!")
             return
         
-        # Create admin user with simple SHA256 hash
-        password_hash = hashlib.sha256("admin123".encode()).hexdigest()
+        # Create admin user with proper password hashing
+        password_hash = get_password_hash("admin123")
         
         admin_user = User(
+            id=uuid.uuid4(),
             email="admin@example.com",
             name="Admin User",
             password_hash=password_hash,

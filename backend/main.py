@@ -9,9 +9,7 @@ import os
 from database import get_db, engine
 from models import Base
 from auth import get_current_user
-from routers import auth, orders, users
-# Temporarily disable webhooks due to model conflicts
-# from routers import webhooks
+from routers import auth, orders, users, webhooks
 from config import settings
 
 # Create database tables
@@ -56,8 +54,7 @@ app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads"
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(orders.router, prefix="/api/orders", tags=["orders"])
-# Temporarily disable webhooks due to model conflicts
-# app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
+app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
 
 @app.get("/health")
 async def health_check():

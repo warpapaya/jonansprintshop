@@ -8,7 +8,7 @@ services:
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: clay_cutter_orders
+      POSTGRES_DB: jonans_print_shop
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
@@ -24,7 +24,7 @@ services:
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/clay_cutter_orders
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/jonans_print_shop
       SECRET_KEY: your-secret-key-change-in-production
       UPLOAD_DIR: /app/uploads
     volumes:
@@ -42,6 +42,8 @@ services:
 
   frontend:
     build: ./frontend
+    ports:
+      - "3001:80"
     networks:
       - web_proxy
     depends_on:
