@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  web_proxy:
+    external: true
+
 services:
   db:
     image: postgres:15-alpine
@@ -9,8 +13,8 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./data/db:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    networks:
+      - web_proxy
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -19,14 +23,14 @@ services:
 
   backend:
     build: ./backend
-    ports:
-      - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/clay_cutter_orders
       SECRET_KEY: your-secret-key-change-in-production
       UPLOAD_DIR: /app/uploads
     volumes:
       - ./data/uploads:/app/uploads
+    networks:
+      - web_proxy
     depends_on:
       db:
         condition: service_healthy
@@ -38,15 +42,25 @@ services:
 
   frontend:
     build: ./frontend
-    ports:
-      - "3001:80"
+    networks:
+      - web_proxy
     depends_on:
       - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jonans-print-shop.rule=Host(`printshop.localhost`)"
+      - "traefik.http.routers.jonans-print-shop.entrypoints=web"
+      - "traefik.http.services.jonans-print-shop.loadbalancer.server.port=80"
+      - "traefik.http.routers.jonans-print-shop.middlewares=printshop-headers"
+      - "traefik.http.middlewares.printshop-headers.headers.customrequestheaders.X-Forwarded-Proto=http"
+      - "traefik.http.middlewares.printshop-headers.headers.customrequestheaders.X-Forwarded-Port=80"
 
   clamav:
     image: clamav/clamav:stable
     volumes:
       - ./data/uploads:/scan
     command: ["clamd"]
+    networks:
+      - web_proxy
     profiles:
       - security

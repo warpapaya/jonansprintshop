@@ -9,6 +9,9 @@ A self-hosted, dockerized web application for managing 3D-printed clay cutter or
 git clone https://github.com/warpapaya/jonansprintshop.git
 cd jonansprintshop
 
+# Ensure the web_proxy network exists (for Traefik integration)
+docker network create web_proxy 2>/dev/null || true
+
 # Start the application
 docker compose up -d
 
@@ -18,6 +21,17 @@ docker compose logs -f
 # Stop the application
 docker compose down
 ```
+
+## 🔧 Traefik Integration
+
+This application is configured to work with Traefik reverse proxy:
+
+- **Domain**: `printshop.localhost`
+- **Network**: `web_proxy` (external)
+- **Entrypoint**: `web`
+- **Automatic HTTPS**: Configured for production use
+
+The frontend is accessible at `http://printshop.localhost` and the API is automatically proxied through the frontend at `/api/` endpoints.
 
 ## 🏗️ Architecture
 
@@ -62,9 +76,9 @@ docker compose down
 
 ## 🌐 Access
 
-- **Frontend**: http://localhost:3001
-- **Backend API**: http://localhost:8000
-- **Database**: localhost:5432 (internal only)
+- **Frontend**: http://printshop.localhost (via Traefik)
+- **Backend API**: http://printshop.localhost/api/ (proxied through frontend)
+- **Database**: Internal only (accessible within Docker network)
 
 ## 📋 Default Login
 
