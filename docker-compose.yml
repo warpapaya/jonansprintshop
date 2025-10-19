@@ -48,7 +48,7 @@ services:
       - backend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jonans-print-shop.rule=Host(`printshop.localhost`)"
+      - "traefik.http.routers.jonans-print-shop.rule=Host(`orders.petieclark.com`)"
       - "traefik.http.routers.jonans-print-shop.entrypoints=web"
       - "traefik.http.services.jonans-print-shop.loadbalancer.server.port=80"
       - "traefik.http.routers.jonans-print-shop.middlewares=printshop-headers"
