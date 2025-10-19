@@ -15,6 +15,13 @@ from config import settings
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
+# Create startup admin user
+try:
+    from create_startup_admin import create_admin_user
+    create_admin_user()
+except Exception as e:
+    print(f"Warning: Could not create startup admin: {e}")
+
 app = FastAPI(
     title="Clay Cutter Order Portal",
     description="A self-hosted order management system for 3D-printed clay cutters",
