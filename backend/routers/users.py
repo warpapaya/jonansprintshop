@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from database import get_db
 from models import User, UserRole
-from auth import get_current_user, require_role
+from auth import get_current_user, require_role, get_password_hash
 
 router = APIRouter()
 
@@ -20,6 +20,7 @@ class UserUpdate(BaseModel):
     name: str = None
     email: str = None
     role: UserRole = None
+    password: str = None
 
 @router.get("/", response_model=List[UserResponse])
 async def get_users(
@@ -77,6 +78,8 @@ async def update_user(
         user.email = user_update.email
     if user_update.role is not None:
         user.role = user_update.role
+    if user_update.password is not None:
+        user.password_hash = get_password_hash(user_update.password)
     
     db.commit()
     db.refresh(user)
