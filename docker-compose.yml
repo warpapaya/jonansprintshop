@@ -47,13 +47,12 @@ services:
     depends_on:
       - backend
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jonans-print-shop.rule=Host(`orders.petieclark.com`)"
-      - "traefik.http.routers.jonans-print-shop.entrypoints=web"
-      - "traefik.http.services.jonans-print-shop.loadbalancer.server.port=80"
-      - "traefik.http.routers.jonans-print-shop.middlewares=printshop-headers"
-      - "traefik.http.middlewares.printshop-headers.headers.customrequestheaders.X-Forwarded-Proto=http"
-      - "traefik.http.middlewares.printshop-headers.headers.customrequestheaders.X-Forwarded-Port=80"
+      - traefik.http.routers.jonansshop.rule=Host(`orders.petieclark.com`)
+      - traefik.http.routers.jonansshop.tls.certresolver=myresolver
+      - traefik.http.routers.jonansshop.entrypoints=websecure
+      - traefik.http.services.jonansshop.loadbalancer.server.port=80
+      - traefik.http.services.jonansshop.loadbalancer.server.scheme=http
+      - traefik.enable=true
 
   clamav:
     image: clamav/clamav:stable
